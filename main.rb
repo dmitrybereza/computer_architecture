@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'time'
+require 'find'
 require 'pathname'
 
 HELP_PARAMETR = '/?'
@@ -11,7 +12,7 @@ EMPTY_PLACE = ''
 DEFAULT_DIR = __dir__
 ABSOLUTE_PATH = 'absolute-path'
 SKIP_ATTRIBUTE = 'skip-hidden'
-HIDDEN_ATTRIBUTE = '.'
+HIDDEN_ATTRIBUTE = '/.'
 
 def print_help
   puts 'Welcome to help!'
@@ -116,11 +117,10 @@ def find_date
 end
 
 def change_dir_files_date(folder:, date:, attributes:)
-  Dir.each_child(folder) do |file|
-    next if attributes == SKIP_ATTRIBUTE && file[0] == HIDDEN_ATTRIBUTE
+  Find.find(folder) do |path|
+    next if attributes == SKIP_ATTRIBUTE && path.include?(HIDDEN_ATTRIBUTE)
 
-    filename = folder + file
-    File.utime(File.atime(filename), date, filename)
+    File.utime(File.atime(path), date, path)
   end
 end
 
