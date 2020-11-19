@@ -1,0 +1,6 @@
+ruby main.rb 'hello/' '9 April 2010' '/A:[skip-hidden]'
+ruby main.rb 'hello/' '10 April 2010' '/A:[skip-hidden]'
+ruby main.rb 'hello/' '10 April 2010' '/A:[skip-hidden]'
+ruby main.rb  '10 April 2010' '/A:[skip-hidden]'
+ruby main.rb 'main.rb' '10 April 2010' '/A:[skip-hidden]'
+ruby main.rb 'hello/' 'hello.txt' '10 April 2010' '/A:[skip-hidden]'
