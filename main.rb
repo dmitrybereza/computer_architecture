@@ -13,6 +13,8 @@ DEFAULT_DIR = __dir__
 ABSOLUTE_PATH = 'absolute-path'
 SKIP_ATTRIBUTE = 'skip-hidden'
 HIDDEN_ATTRIBUTE = '/.'
+MASK = '*.'
+ALL_FILES = '*'
 
 def print_help
   puts 'Welcome to help!'
@@ -21,6 +23,7 @@ def print_help
   puts '  2 parametr filename in catalog (default: all files)'
   puts '  3 parametr new creation time'
   puts "  4 parametr file attributes '/A:[attr1, attr2, ...]'"
+  puts '  5 parametr file mask in format: \'*.ext\''
   puts '  Admissible attributes: \'absolute-path skip-hidden\''
 end
 
@@ -107,6 +110,14 @@ def find_date_from_args
   end
 end
 
+def find_mask
+  return ALL_FILES unless ARGV.last&.include?(MASK)
+
+  mask = ARGV.last
+  ARGV.pop
+  mask
+end
+
 def find_date
   date = find_date_from_args
 
@@ -116,23 +127,24 @@ def find_date
   date[:date]
 end
 
-def change_dir_files_date(folder:, date:, attributes:)
-  Find.find(folder) do |path|
+def change_dir_files_date(mask:, folder:, date:, attributes:)
+  Dir.glob("#{folder}/**/#{mask}", File::FNM_DOTMATCH).each do |path|
     next if attributes == SKIP_ATTRIBUTE && path.include?(HIDDEN_ATTRIBUTE)
 
     File.utime(File.atime(path), date, path)
   end
 end
 
-def change_date(date:, folder:, file:, attributes:)
-  return change_dir_files_date(folder: folder, date: date, attributes: attributes) if file.nil?
+def change_date(mask:, date:, folder:, file:, attributes:)
+  return change_dir_files_date(mask: mask, folder: folder, date: date, attributes: attributes) if file.nil?
 
   File.utime(File.atime(file), date, file)
 end
 
 help
 date = find_date
+mask = find_mask
 file_attributes = attributes
 folder_path = find_folder_path(file_attributes)
 file_path = find_file(folder_path)
-change_date(date: date, folder: folder_path, file: file_path, attributes: file_attributes)
+change_date(mask: mask, date: date, folder: folder_path, file: file_path, attributes: file_attributes)
